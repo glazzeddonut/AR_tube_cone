@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>GeoLab AR — Study Solids in Augmented Reality</title>
+
+  <!--
+    LIBRARY VERSIONS
+    These two versions are tested together by the AR.js maintainers (see the
+    official AR.js README). If you ever upgrade A-Frame, upgrade AR.js to a
+    matching build or marker tracking will silently break.
+  -->
+  <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- ============================================================= -->
+  <!-- 1. AR SCENE                                                   -->
+  <!-- The scene renders the live webcam feed. Each <a-marker> is a  -->
+  <!-- coordinate space anchored to a printed marker. Everything     -->
+  <!-- inside a marker only appears when that marker is in view.     -->
+  <!-- ============================================================= -->
+  <a-scene
+    embedded
+    vr-mode-ui="enabled: false"
+    renderer="logarithmicDepthBuffer: true; colorManagement: true; antialias: true"
+    arjs="sourceType: webcam; detectionMode: mono; trackingMethod: best; debugUIEnabled: false">
+
+    <!-- ---------- CYLINDER lives on the HIRO marker ---------- -->
+    <a-marker preset="hiro" id="marker-cyl">
+      <a-entity id="cyl-group">
+        <!-- the solid itself -->
+        <a-cylinder id="cyl" radius="0.3" height="0.36" position="0 0.18 0"
+          material="color: #38BDF8; opacity: 0.92; metalness: 0.1; roughness: 0.55; side: double"></a-cylinder>
+
+        <!-- translucent "extrusion sweep" used by the formula breakdown -->
+        <a-cylinder id="cyl-sweep" radius="0.3" height="0.36" position="0 0 0" visible="false"
+          material="color: #A78BFA; opacity: 0.32; transparent: true; side: double"></a-cylinder>
+
+        <!-- highlighted circular base (A = πr²) used by the breakdown -->
+        <a-cylinder id="cyl-base" radius="0.3" height="0.018" position="0 0.01 0" visible="false"
+          material="color: #A78BFA; emissive: #A78BFA; emissiveIntensity: 0.7"></a-cylinder>
+
+        <!-- radius ruler (RED — matches the red r in every formula) -->
+        <a-box id="cyl-rruler" position="0.15 0.025 0" width="0.3" height="0.014" depth="0.014"
+          material="color: #FF5A5F; emissive: #FF5A5F; emissiveIntensity: 0.6"></a-box>
+        <a-text id="cyl-rlabel" value="r" color="#FF5A5F" align="center" position="0.15 0.075 0" width="2.4"></a-text>
+
+        <!-- height ruler (CYAN — matches the cyan h in every formula) -->
+        <a-box id="cyl-hruler" position="-0.34 0.18 0" width="0.014" height="0.36" depth="0.014"
+          material="color: #22D3EE; emissive: #22D3EE; emissiveIntensity: 0.6"></a-box>
+        <a-text id="cyl-hlabel" value="h" color="#22D3EE" align="center" position="-0.4 0.18 0" width="2.4"></a-text>
+
+        <!-- floating formula -->
+        <a-text id="cyl-formula" value="CYLINDER&#10;V = pi r^2 h" color="#F8FAFC"
+          align="center" position="0 0.78 0" width="2.4" baseline="bottom"></a-text>
+
+        <!-- quiz prompt (hidden unless quiz mode) -->
+        <a-text id="cyl-quiz" value="" color="#FBBF24" align="center"
+          position="0 0.78 0" width="2.4" visible="false"></a-text>
+      </a-entity>
+    </a-marker>
+
+    <!-- ---------- CONE lives on the KANJI marker ---------- -->
+    <a-marker preset="kanji" id="marker-cone">
+      <a-entity id="cone-group">
+        <a-cone id="cone" radius-bottom="0.3" radius-top="0" height="0.42" position="0 0.21 0"
+          material="color: #FB923C; opacity: 0.92; metalness: 0.1; roughness: 0.55; side: double"></a-cone>
+
+        <a-cone id="cone-sweep" radius-bottom="0.3" radius-top="0" height="0.42" position="0 0 0" visible="false"
+          material="color: #A78BFA; opacity: 0.32; transparent: true; side: double"></a-cone>
+
+        <a-cylinder id="cone-base" radius="0.3" height="0.018" position="0 0.01 0" visible="false"
+          material="color: #A78BFA; emissive: #A78BFA; emissiveIntensity: 0.7"></a-cylinder>
+
+        <a-box id="cone-rruler" position="0.15 0.025 0" width="0.3" height="0.014" depth="0.014"
+          material="color: #FF5A5F; emissive: #FF5A5F; emissiveIntensity: 0.6"></a-box>
+        <a-text id="cone-rlabel" value="r" color="#FF5A5F" align="center" position="0.15 0.075 0" width="2.4"></a-text>
+
+        <a-box id="cone-hruler" position="-0.34 0.21 0" width="0.014" height="0.42" depth="0.014"
+          material="color: #22D3EE; emissive: #22D3EE; emissiveIntensity: 0.6"></a-box>
+        <a-text id="cone-hlabel" value="h" color="#22D3EE" align="center" position="-0.4 0.21 0" width="2.4"></a-text>
+
+        <a-text id="cone-formula" value="CONE&#10;V = (1/3) pi r^2 h" color="#F8FAFC"
+          align="center" position="0 0.86 0" width="2.4" baseline="bottom"></a-text>
+
+        <a-text id="cone-quiz" value="" color="#FBBF24" align="center"
+          position="0 0.86 0" width="2.4" visible="false"></a-text>
+      </a-entity>
+    </a-marker>
+
+    <!-- The camera is anchored at the origin; markers move relative to it. -->
+    <a-entity camera></a-entity>
+  </a-scene>
+
+
+  <!-- ============================================================= -->
+  <!-- 2. INTRO / PERMISSION CARD                                    -->
+  <!-- ============================================================= -->
+  <div id="intro" class="intro">
+    <div class="intro-card">
+      <div class="brand">GeoLab<span>AR</span></div>
+      <p class="intro-lead">Point your camera at a marker to make a solid appear, then explore its volume by hand.</p>
+      <div class="marker-legend">
+        <div><span class="dot cyl"></span> Hiro marker → Cylinder</div>
+        <div><span class="dot cone"></span> Kanji marker → Cone</div>
+      </div>
+      <p class="intro-fine">You'll need to allow camera access. Print or open the
+        <a href="https://raw.githack.com/AR-js-org/AR.js/master/data/images/hiro.png" target="_blank" rel="noopener">Hiro</a> and
+        <a href="https://raw.githack.com/AR-js-org/AR.js/master/data/images/kanji.png" target="_blank" rel="noopener">Kanji</a>
+        markers on a second screen.</p>
+      <button id="intro-start" class="btn btn-primary btn-block">Allow camera &amp; start</button>
+    </div>
+  </div>
+
+
+  <!-- ============================================================= -->
+  <!-- 3. STATUS PILL (which marker is currently tracked)            -->
+  <!-- ============================================================= -->
+  <div id="status" class="status" aria-live="polite">Searching for a marker…</div>
+
+
+  <!-- ============================================================= -->
+  <!-- 4. CONTROL DOCK (the 2D dashboard overlay)                    -->
+  <!-- ============================================================= -->
+  <section id="dock" class="dock" aria-label="Geometry controls">
+
+    <button id="dock-handle" class="dock-handle" aria-expanded="true" aria-controls="dock-body">
+      <span class="grip"></span>
+    </button>
+
+    <div id="dock-body" class="dock-body">
+
+      <!-- mode chips -->
+      <div class="chips">
+        <button id="btn-wire"  class="chip" aria-pressed="false">Wireframe</button>
+        <button id="btn-break" class="chip">Break down formula</button>
+        <button id="btn-quiz"  class="chip" aria-pressed="false">Quiz mode</button>
+      </div>
+
+      <!-- live controls (hidden during quiz) -->
+      <div id="controls" class="controls">
+        <div class="slider-row">
+          <label for="radius">Radius <em class="tok-r">r</em></label>
+          <input id="radius" type="range" min="1" max="8" step="0.1" value="3" class="range range-r" />
+          <output id="radius-val" class="tok-r">3.0 cm</output>
+        </div>
+
+        <div class="slider-row">
+          <label for="height">Height <em class="tok-h">h</em></label>
+          <input id="height" type="range" min="1" max="12" step="0.1" value="6" class="range range-h" />
+          <output id="height-val" class="tok-h">6.0 cm</output>
+        </div>
+
+        <!-- live results -->
+        <div class="results">
+          <div class="result">
+            <div class="result-head"><span class="swatch cyl"></span>Cylinder</div>
+            <div class="formula">V = π<em class="tok-r">r</em>²<em class="tok-h">h</em></div>
+            <div class="value"><span id="cyl-vol" class="tok-v">—</span> cm³</div>
+            <div class="sub">Surface area <span id="cyl-area">—</span> cm²</div>
+          </div>
+          <div class="result">
+            <div class="result-head"><span class="swatch cone"></span>Cone</div>
+            <div class="formula">V = ⅓π<em class="tok-r">r</em>²<em class="tok-h">h</em></div>
+            <div class="value"><span id="cone-vol" class="tok-v">—</span> cm³</div>
+            <div class="sub">Surface area <span id="cone-area">—</span> cm²</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- quiz panel (hidden until quiz mode) -->
+      <div id="quiz" class="quiz" hidden>
+        <p id="quiz-prompt" class="quiz-prompt">…</p>
+        <div class="quiz-input">
+          <input id="quiz-answer" type="number" inputmode="decimal" placeholder="Your volume (cm³)" />
+          <button id="quiz-submit" class="btn btn-primary">Check</button>
+        </div>
+        <p id="quiz-feedback" class="quiz-feedback" role="status"></p>
+        <button id="quiz-next" class="btn btn-ghost" hidden>New question</button>
+      </div>
+
+    </div>
+  </section>
+
+  <script src="app.js"></script>
+</body>
+</html>
