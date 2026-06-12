@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>SyLab AR — Belajar Bangun Ruang dengan AR</title>
+
+  <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <div id="intro" class="intro">
+    <div class="intro-card">
+      <h1 class="brand">SyLab <span>AR</span></h1>
+      <p class="intro-lead">Arahkan kamera ke marker untuk memunculkan bangun ruang.</p>
+      <div class="marker-legend">
+        <span><i class="dot cyl"></i> Hiro (Tabung)</span>
+        <span><i class="dot cone"></i> Kanji (Kerucut)</span>
+      </div>
+      <button id="btn-start" class="btn btn-primary btn-block">Mulai Kamera AR</button>
+    </div>
+  </div>
+
+  <button id="btn-clear" class="btn-clear" aria-label="Tutup Model" hidden>✕</button>
+
+ <a-scene
+    embedded
+    vr-mode-ui="enabled: false"
+    background="color: transparent; transparent: true"
+    renderer="logarithmicDepthBuffer: true; colorManagement: true; antialias: true; alpha: true"
+    arjs="sourceType: webcam; detectionMode: mono; trackingMethod: best; debugUIEnabled: false">
+
+    <!-- Markers: shapes live directly on marker so they track in 3D world space -->
+    <a-marker preset="hiro" id="marker-cyl">
+      <a-entity id="cyl-group" scale="1.8 1.8 1.8">
+        <a-cylinder id="cyl" radius="0.3" height="0.36" position="0 0.18 0"
+          material="color: #38BDF8; opacity: 0.92; metalness: 0.1; roughness: 0.55; side: double"></a-cylinder>
+        <a-cylinder id="cyl-sweep" radius="0.3" height="0.36" position="0 0 0" visible="false"
+          material="color: #A78BFA; opacity: 0.32; transparent: true; side: double"></a-cylinder>
+        <a-cylinder id="cyl-base" radius="0.3" height="0.018" position="0 0.01 0" visible="false"
+          material="color: #A78BFA; emissive: #A78BFA; emissiveIntensity: 0.7"></a-cylinder>
+        <a-box id="cyl-rruler" position="0.15 0.025 0" width="0.3" height="0.014" depth="0.014"
+          material="color: #ef4444; emissive: #ef4444; emissiveIntensity: 0.6"></a-box>
+        <a-text id="cyl-rlabel" value="r" color="#ef4444" align="center" position="0.15 0.075 0" width="2.4"></a-text>
+        <a-box id="cyl-hruler" position="-0.34 0.18 0" width="0.014" height="0.36" depth="0.014"
+          material="color: #3b82f6; emissive: #3b82f6; emissiveIntensity: 0.6"></a-box>
+        <a-text id="cyl-hlabel" value="h" color="#3b82f6" align="center" position="-0.4 0.18 0" width="2.4"></a-text>
+        <a-text id="cyl-formula" value="TABUNG&#10;V = pi r^2 h" color="#F8FAFC"
+          align="center" position="0 0.78 0" width="2.4" baseline="bottom"></a-text>
+        <a-text id="cyl-quiz" value="" color="#eab308" align="center"
+          position="0 0.78 0" width="2.4" visible="false"></a-text>
+      </a-entity>
+    </a-marker>
+
+    <a-marker preset="kanji" id="marker-cone">
+      <a-entity id="cone-group" scale="1.8 1.8 1.8">
+        <a-cone id="cone" radius-bottom="0.3" radius-top="0" height="0.42" position="0 0.21 0"
+          material="color: #f97316; opacity: 0.92; metalness: 0.1; roughness: 0.55; side: double"></a-cone>
+        <a-cone id="cone-sweep" radius-bottom="0.3" radius-top="0" height="0.42" position="0 0 0" visible="false"
+          material="color: #A78BFA; opacity: 0.32; transparent: true; side: double"></a-cone>
+        <a-cylinder id="cone-base" radius="0.3" height="0.018" position="0 0.01 0" visible="false"
+          material="color: #A78BFA; emissive: #A78BFA; emissiveIntensity: 0.7"></a-cylinder>
+        <a-box id="cone-rruler" position="0.15 0.025 0" width="0.3" height="0.014" depth="0.014"
+          material="color: #ef4444; emissive: #ef4444; emissiveIntensity: 0.6"></a-box>
+        <a-text id="cone-rlabel" value="r" color="#ef4444" align="center" position="0.15 0.075 0" width="2.4"></a-text>
+        <a-box id="cone-hruler" position="-0.34 0.21 0" width="0.014" height="0.42" depth="0.014"
+          material="color: #3b82f6; emissive: #3b82f6; emissiveIntensity: 0.6"></a-box>
+        <a-text id="cone-hlabel" value="h" color="#3b82f6" align="center" position="-0.4 0.21 0" width="2.4"></a-text>
+        <a-text id="cone-formula" value="KERUCUT&#10;V = (1/3) pi r^2 h" color="#F8FAFC"
+          align="center" position="0 0.86 0" width="2.4" baseline="bottom"></a-text>
+        <a-text id="cone-quiz" value="" color="#eab308" align="center"
+          position="0 0.86 0" width="2.4" visible="false"></a-text>
+      </a-entity>
+    </a-marker>
+
+    <!-- Ghost entity: world-space copy shown when marker is lost, so you can tilt/move camera freely -->
+    <a-entity id="ghost-anchor">
+      <a-entity id="ghost-cyl-group" visible="false" scale="1.8 1.8 1.8">
+        <a-cylinder id="ghost-cyl" radius="0.3" height="0.36" position="0 0.18 0"
+          material="color: #38BDF8; opacity: 0.92; metalness: 0.1; roughness: 0.55; side: double"></a-cylinder>
+        <a-box id="ghost-cyl-rruler" position="0.15 0.025 0" width="0.3" height="0.014" depth="0.014"
+          material="color: #ef4444; emissive: #ef4444; emissiveIntensity: 0.6"></a-box>
+        <a-text id="ghost-cyl-rlabel" value="r" color="#ef4444" align="center" position="0.15 0.075 0" width="2.4"></a-text>
+        <a-box id="ghost-cyl-hruler" position="-0.34 0.18 0" width="0.014" height="0.36" depth="0.014"
+          material="color: #3b82f6; emissive: #3b82f6; emissiveIntensity: 0.6"></a-box>
+        <a-text id="ghost-cyl-hlabel" value="h" color="#3b82f6" align="center" position="-0.4 0.18 0" width="2.4"></a-text>
+        <a-text id="ghost-cyl-formula" value="TABUNG&#10;V = pi r^2 h" color="#F8FAFC"
+          align="center" position="0 0.78 0" width="2.4" baseline="bottom"></a-text>
+      </a-entity>
+      <a-entity id="ghost-cone-group" visible="false" scale="1.8 1.8 1.8">
+        <a-cone id="ghost-cone" radius-bottom="0.3" radius-top="0" height="0.42" position="0 0.21 0"
+          material="color: #f97316; opacity: 0.92; metalness: 0.1; roughness: 0.55; side: double"></a-cone>
+        <a-box id="ghost-cone-rruler" position="0.15 0.025 0" width="0.3" height="0.014" depth="0.014"
+          material="color: #ef4444; emissive: #ef4444; emissiveIntensity: 0.6"></a-box>
+        <a-text id="ghost-cone-rlabel" value="r" color="#ef4444" align="center" position="0.15 0.075 0" width="2.4"></a-text>
+        <a-box id="ghost-cone-hruler" position="-0.34 0.21 0" width="0.014" height="0.42" depth="0.014"
+          material="color: #3b82f6; emissive: #3b82f6; emissiveIntensity: 0.6"></a-box>
+        <a-text id="ghost-cone-hlabel" value="h" color="#3b82f6" align="center" position="-0.4 0.21 0" width="2.4"></a-text>
+        <a-text id="ghost-cone-formula" value="KERUCUT&#10;V = (1/3) pi r^2 h" color="#F8FAFC"
+          align="center" position="0 0.86 0" width="2.4" baseline="bottom"></a-text>
+      </a-entity>
+    </a-entity>
+
+    <a-entity camera></a-entity>
+  </a-scene>
+
+  <div id="status" class="status" aria-live="polite">Mencari marker...</div>
+
+  <section id="dock" class="dock" aria-label="Geometry controls">
+
+    <button id="dock-handle" class="dock-handle" aria-expanded="false" aria-controls="dock-extra">
+      <span class="grip"></span>
+      <span id="dock-hint" class="dock-hint">Ketuk untuk alat &amp; hasil</span>
+    </button>
+
+    <div class="dock-body">
+      <div id="controls" class="peek">
+        <div class="slider-row">
+          <label for="radius">Jari-jari <em class="tok-r">r</em></label>
+          <input id="radius" type="range" min="1" max="8" step="0.1" value="3" class="range range-r" />
+          <output id="radius-val" class="tok-r">3.0 cm</output>
+        </div>
+        <div class="slider-row">
+          <label for="height">Tinggi <em class="tok-h">h</em></label>
+          <input id="height" type="range" min="1" max="12" step="0.1" value="6" class="range range-h" />
+          <output id="height-val" class="tok-h">6.0 cm</output>
+        </div>
+      </div>
+
+      <div id="dock-extra" class="extra">
+        <div class="chips">
+          <button id="btn-wire"  class="chip" aria-pressed="false">Kerangka</button>
+          <button id="btn-break" class="chip">Urai rumus</button>
+          <button id="btn-quiz"  class="chip" aria-pressed="false">Mode kuis</button>
+        </div>
+
+        <div id="cards" class="results">
+          <div id="card-empty" class="card-empty">Arahkan kamera ke marker untuk memunculkan 3D.</div>
+
+          <div id="card-cyl" class="result" hidden>
+            <div class="result-head"><span class="swatch cyl"></span>Tabung</div>
+            <div class="formula">V = π<em class="tok-r">r</em>²<em class="tok-h">h</em></div>
+            <div class="value"><span id="cyl-vol" class="tok-v">—</span> cm³</div>
+            <div class="sub">Luas permukaan <span id="cyl-area">—</span> cm²</div>
+          </div>
+
+          <div id="card-cone" class="result" hidden>
+            <div class="result-head"><span class="swatch cone"></span>Kerucut</div>
+            <div class="formula">V = ⅓π<em class="tok-r">r</em>²<em class="tok-h">h</em></div>
+            <div class="value"><span id="cone-vol" class="tok-v">—</span> cm³</div>
+            <div class="sub">Luas permukaan <span id="cone-area">—</span> cm²</div>
+          </div>
+        </div>
+
+        <div id="quiz" class="quiz" hidden>
+          <p id="quiz-prompt" class="quiz-prompt">…</p>
+          <div class="quiz-input">
+            <input id="quiz-answer" type="number" inputmode="decimal" placeholder="Tebakan (cm³)" />
+            <button id="quiz-submit" class="btn btn-primary">Cek</button>
+          </div>
+          <p id="quiz-feedback" class="quiz-feedback" role="status"></p>
+          <button id="quiz-next" class="btn btn-ghost" hidden>Pertanyaan baru</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script src="app.js"></script>
+</body>
+</html>
